@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Billpayment">
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="30dp"
+        android:id="@+id/Bill"
+        android:textAlignment="center"
+        android:text="แจ้งการชำระเงิน"
+        />
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/Name"
+        android:hint="ชื่อ :"
+        android:layout_marginTop="70dp"
+
+
+        />
+
+    <EditText
+        android:id="@+id/Price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Name"
+
+        android:hint="ราคา"
+        android:layout_marginTop="23dp" />
+
+    <EditText
+        android:id="@+id/Date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Price"
+        android:hint="วันที่ชำระ :"
+
+        android:layout_marginTop="23dp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+       android:layout_alignBottom="@id/Confirm"
+
+         />
+
+    <Button
+        android:id="@+id/Browse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Gallery" />
+
+    <Button
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:text="ยืนยันการชำระเงิน"
+        android:id="@+id/Confirm"
+     android:layout_marginTop="53dp"
+     android:layout_below="@id/Date"
+     />
+
+
+
+
+</RelativeLayout>
