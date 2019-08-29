@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +17,29 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.acer.printer.Orderstatusclass;
 import com.example.acer.printer.Productlistclass;
 import com.example.acer.printer.R;
 import com.example.acer.printer.RetrofitClient;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -32,9 +47,27 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Orderstatusadapter extends RecyclerView.Adapter<Orderstatusadapter.ProductViewholder> {
-    public static final String URL="http://192.168.64.2/ecomfish/ecomfish/Timageproduct/";
+    public static final String URL="http://192.168.64.2/";
+
+
+    public static final String URL1="http://192.168.64.2/MyApi/public/GenorderIdforQR";
+
 
     private Context mCtx;
+
+    final Calendar c = Calendar.getInstance();
+
+    String Getuser;
+
+    String datetime;
+
+
+    String Order_Id[];
+
+
+    int keepcount;
+    double keepsum;
+    EditText input;
 
     private List<Orderstatusclass> orderstatusclassList=new ArrayList<>();
     Orderstatusclass orderstatusclass;
@@ -71,15 +104,15 @@ public class Orderstatusadapter extends RecyclerView.Adapter<Orderstatusadapter.
 
         //  productViewholder.textViewtitle.setText(product.getPro_Id()+product.getTitle());
 
-       // productViewholder.Order_id.setText("คำสั่งซื้อที่ : "+orderstatusclass.getOrder_id());
-        productViewholder.Quantity.setText("จำนวน :"+orderstatusclass.getQty());
+        // productViewholder.Order_id.setText("คำสั่งซื้อที่ : "+orderstatusclass.getOrder_id());
+        productViewholder.Quantity.setText("จำนวน :"+orderstatusclass.getQty()+"Order Id"+orderstatusclass.getOrder_id());
         productViewholder.Price.setText("ราคา : "+orderstatusclass.getPrice_normal());
 
 
         for (int i=0;i<pos;i++){
 
 
-                productViewholder.Confirmorder.setVisibility(View.INVISIBLE);
+            productViewholder.Confirmorder.setVisibility(View.INVISIBLE);
 
         }
 
@@ -97,35 +130,47 @@ public class Orderstatusadapter extends RecyclerView.Adapter<Orderstatusadapter.
             }
         });
 
-productViewholder.Confirmorder.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
+        productViewholder.Confirmorder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
 
 
 
 
-        int sumquantity=0;
+                int sumquantity=0;
+
+                int count=0;
+
+
+                for (int i=0;i<=orderstatusclassList.size()-1;i++) {
+
+                    //keep[i]+=orderstatusclass.getQty()+",";
+                    orderstatusclass=orderstatusclassList.get(i);
+
+
+                    sumquantity+=orderstatusclass.getPrice_normal();
+
+
+                    count+=orderstatusclass.getQty();
+
+                    //Toast.makeText(mCtx, orderstatusclass.getQty()+"", Toast.LENGTH_LONG).show();
+                    // System.out.println(orderstatusclass.getOrder_id()+"");
+
+                }
+                keepcount=count;
+                keepsum=sumquantity;
+                System.out.println(keepcount);
+                System.out.println(sumquantity);
+                // Toast.makeText(mCtx, keep+"", Toast.LENGTH_LONG).show();
+                Dialog(keepcount,keepsum);
 
 
 
-        for (int i=0;i<=orderstatusclassList.size()-1;i++) {
 
-            //keep[i]+=orderstatusclass.getQty()+",";
-            orderstatusclass=orderstatusclassList.get(i);
+            }
+        });
 
-
-            sumquantity+=orderstatusclass.getPrice_normal();
-
-
-            //Toast.makeText(mCtx, orderstatusclass.getQty()+"", Toast.LENGTH_LONG).show();
-            System.out.println(orderstatusclass.getPrice_normal()+"");
-
-        }
-        System.out.println(sumquantity);
-       // Toast.makeText(mCtx, keep+"", Toast.LENGTH_LONG).show();
-    }
-});
 
 
         Picasso.get().load(URL+orderstatusclass.getPro_pix()).into(productViewholder.Image);
@@ -135,21 +180,20 @@ productViewholder.Confirmorder.setOnClickListener(new View.OnClickListener() {
     }
 
 
-/*
-    public void Dialog(final int keepview){
 
-        product=productList.get(keepview);
+    public void Dialog(final int keepcount,final double sum){
 
         AlertDialog.Builder alertDialog= new AlertDialog.Builder(mCtx);
-        alertDialog.setTitle("กรุณาระบุจำนวนที่ต้องการซื้อ");
+        alertDialog.setTitle("รายการที่ทำการยืนยัน : "+keepcount+" ชิ้น"+"\n"+"ราคารวมของสินค้า       : "+sum);
 
-        input = new EditText(mCtx);
+        // input = new EditText(mCtx);
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        input.setLayoutParams(lp);
-        alertDialog.setView(input); // uncomment this line
+        //        input.setLayoutParams(lp);
+        // alertDialog.setView(input); // uncomment this line
+
 
         alertDialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
 
@@ -160,18 +204,12 @@ productViewholder.Confirmorder.setOnClickListener(new View.OnClickListener() {
                 // Toast.makeText(mCtx,String.valueOf(product.getPro_Id()) ,Toast.LENGTH_SHORT).show();
 
                 //ไม่ให้สั่งซื้อเกิน Stcokได้
-                if(Double.parseDouble(input.getText().toString())>Double.parseDouble(product.getStock()) &&!input.getText().toString().isEmpty() ){
 
-                    Toast.makeText(mCtx,"ซื้อเกินจำนวนที่มีไม่ได้ครับ หรือ กรอกผิดครับ",Toast.LENGTH_SHORT).show();
-                }
+                //input.setText("ddd"+keepcount);
 
+                Confirmorder(keepcount,sum);
 
-                else {
-                    Buying((product.getPro_Id()));
-                    Order();
-
-                }
-
+                Setstatusforrecieve();
 
             }
         });
@@ -187,9 +225,181 @@ productViewholder.Confirmorder.setOnClickListener(new View.OnClickListener() {
         });
 
         alertDialog.show();
+
+
     }
 
-    */
+
+
+
+
+    public void Setstatusforrecieve(){
+        SharedPreferences Getgs = mCtx.getSharedPreferences("User", 0);
+
+        final String username=Getgs.getString("Username", "").toString();
+
+
+        RequestQueue queue = Volley.newRequestQueue(mCtx);  // this = context
+
+        StringRequest postRequest = new StringRequest(Request.Method.POST, URL1,
+                new com.android.volley.Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+
+                            JSONObject obj=new JSONObject(response);
+                            JSONArray resultarray=obj.getJSONArray("Qr");
+
+                            Order_Id=new String[resultarray.length()];
+
+
+                            for (int i=0;i<resultarray.length();i++){
+
+                                JSONObject resultobject=resultarray.getJSONObject(i);
+
+
+
+
+
+                                Order_Id[i]=resultobject.getString("order_id");
+
+
+                                Setstatusfalse(username,Order_Id[i]);
+
+
+
+                            }
+
+
+
+                            System.out.println("Json"+Order_Id[0]);
+// SetspinnerSeason();
+
+
+                        }
+
+
+                        catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new com.android.volley.Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.d("Error.Response", "Error");
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("Cusname",username);
+
+
+                return params;
+            }
+        };
+        queue.add(postRequest);
+
+
+    }
+
+
+    //Setเพื่อเข้ารายการที่สั่งแล้วรอรับ
+private void Setstatusfalse(String cusname,String order_id){
+
+    Call<ResponseBody> call=RetrofitClient
+            .getInstance()
+            .getApi()
+            .Setbillfalse(cusname,order_id);
+
+    call.enqueue(new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            String result= null;
+            try {
+                result = response.body().string();
+                Toast.makeText(mCtx,result,Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+        }
+    });
+
+
+}
+
+
+
+
+
+
+    private void Confirmorder(int Quantity,Double Sumtotal){
+
+        //Get User
+
+        SharedPreferences Getgs = mCtx.getSharedPreferences("User", 0);
+
+        final String username=Getgs.getString("Username", "").toString();
+
+
+
+        Getuser=username;
+
+
+        //Get date
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        String strDate = sdf.format(c.getTime());
+
+        datetime = strDate;
+
+
+
+
+
+
+        Call<ResponseBody> call=RetrofitClient
+                .getInstance()
+                .getApi()
+                .Sumbill(Getuser,datetime,Quantity,Sumtotal);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                String result= null;
+                try {
+                    result = response.body().string();
+                    Toast.makeText(mCtx,result,Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+
+
+    }
+
 
 
 
@@ -254,7 +464,7 @@ productViewholder.Confirmorder.setOnClickListener(new View.OnClickListener() {
         notifyItemRangeChanged(position, orderstatusclassList.size());
     }
 
-     class ProductViewholder extends RecyclerView.ViewHolder{
+    class ProductViewholder extends RecyclerView.ViewHolder{
 
         TextView Quantity,Price,textViewtitle,Order_id;
         ImageView Image;

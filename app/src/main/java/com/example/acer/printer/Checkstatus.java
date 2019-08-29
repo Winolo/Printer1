@@ -26,7 +26,6 @@ public class Checkstatus extends AppCompatActivity {
 
     private RecyclerView recyclerView;
 
-   String test= "testkuyy";
 
 
 

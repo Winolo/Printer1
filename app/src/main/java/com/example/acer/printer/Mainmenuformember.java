@@ -13,6 +13,8 @@ public class Mainmenuformember extends AppCompatActivity {
 
     Button testpayment;
 
+    Button TestQr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +30,11 @@ public class Mainmenuformember extends AppCompatActivity {
 
 
         testpayment=(Button)findViewById(R.id.testpayment);
+
+
+
+        TestQr=(Button)findViewById(R.id.Testqr);
+
 
 
         allproduct.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +83,19 @@ public class Mainmenuformember extends AppCompatActivity {
                     startActivity(testpayment);
             }
         });
+
+
+
+        TestQr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent testqr=new Intent(Mainmenuformember.this,Qecodefordriver.class);
+
+                    startActivity(testqr);
+
+            }
+        });
+
 
 
     }

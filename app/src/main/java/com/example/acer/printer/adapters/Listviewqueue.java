@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.acer.printer.Fetchalluser;
 import com.example.acer.printer.Getdrivervieworder;
 import com.example.acer.printer.QueueDriver;
 import com.example.acer.printer.R;
@@ -53,11 +54,12 @@ public class Listviewqueue extends ArrayAdapter<Queuedriverclass> {
 
 
 
+       System.out.println(position);
 
 
 
 
-        watchcus=(Button)listViewItem.findViewById(R.id.Watchcusorder);
+        watchcus=(Button)listViewItem.findViewById(R.id.Cusnamefordriver);
 
         TextView textViewType=(TextView)listViewItem.findViewById(R.id.textViewType);
 
@@ -80,12 +82,30 @@ public class Listviewqueue extends ArrayAdapter<Queuedriverclass> {
         textViewName.setTextColor(Color.BLACK);
 
 
+
+
+        if(position==0 ){
+            watchcus.setEnabled(true);
+        }
+        else{
+            watchcus.setEnabled(false);
+            watchcus.setVisibility(View.INVISIBLE);
+        }
+
+
+
         watchcus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent go=new Intent(mCtx, Getdrivervieworder.class);
 
-                mCtx.startActivity(go);
+
+                Intent fetchuser=new Intent(mCtx,Fetchalluser.class);
+
+
+                fetchuser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                mCtx.startActivity(fetchuser);
+
             }
         });
 

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.util.Calendar;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +30,7 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -54,23 +54,12 @@ public class Productadapter extends RecyclerView.Adapter<Productadapter.ProductV
 int keepview;
      EditText input;
 
-    public static final String URL="http://192.168.64.2/ecomfish/ecomfish/Timageproduct/";
+    public static final String URL="http://192.168.64.2/";
 
 
+    final Calendar c = Calendar.getInstance();
 
-    Calendar c = null;
-        {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                c = Calendar.getInstance();
-            }
-        }
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                String strDate = sdf.format(c.getTime());
-                datetime=strDate;
-            }
-        }
+
 
     public Productadapter(Context mCtx, List<Product> productList) {
         this.mCtx = mCtx;
@@ -85,24 +74,24 @@ int keepview;
 
 
 
-            return new ProductViewholder(view);
+        return new ProductViewholder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ProductViewholder productViewholder, int position) {
-             product=productList.get(position);
+        product=productList.get(position);
 
-             final int pos =productViewholder.getLayoutPosition();
-
-
+        final int pos =productViewholder.getLayoutPosition();
 
 
-             productViewholder.textViewtitle.setText(product.getPro_Id()+".)"+product.getTitle());
-            productViewholder.Detail.setText("รายละเอียด: "+product.getDetail());
-            productViewholder.Price.setText("ราคา: "+product.getPrice_normal());
-            productViewholder.Stock.setText("สินค้าเหลือจำนวน: "+product.getStock());
 
-            productViewholder.buying.setVisibility(View.INVISIBLE);
+
+        productViewholder.textViewtitle.setText(product.getPro_Id()+".)"+product.getTitle());
+        productViewholder.Detail.setText("รายละเอียด: "+product.getDetail());
+        productViewholder.Price.setText("ราคา: "+product.getPrice_normal());
+        productViewholder.Stock.setText("สินค้าเหลือจำนวน: "+product.getStock());
+
+        productViewholder.buying.setVisibility(View.INVISIBLE);
             /*
             productViewholder.buying.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -115,25 +104,25 @@ int keepview;
                 }
             });
 */
-            Picasso.get().load(URL+product.getPro_pic()).into(productViewholder.Image);
+        Picasso.get().load(URL+product.getPro_pic()).into(productViewholder.Image);
 
 
-            // ถ้ามีการเลือกสินค้าชนิดนั้นก็จะไปอีกหน้าทันที ล้ะไปอยู่ในหน้าสั่งซื้อ
-            productViewholder.Image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        // ถ้ามีการเลือกสินค้าชนิดนั้นก็จะไปอีกหน้าทันที ล้ะไปอยู่ในหน้าสั่งซื้อ
+        productViewholder.Image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                    Dialog(pos);
+                Dialog(pos);
 
-                    Toast.makeText(mCtx,String.valueOf(product.getPro_Id()),Toast.LENGTH_SHORT).show();
-
-
-                    //ต้อง Share order_id ให้อีกหน้านึง
+                Toast.makeText(mCtx,String.valueOf(product.getPro_Id()),Toast.LENGTH_SHORT).show();
 
 
+                //ต้อง Share order_id ให้อีกหน้านึง
 
-                }
-            });
+
+
+            }
+        });
 
 
     }
@@ -150,7 +139,7 @@ int keepview;
         AlertDialog.Builder alertDialog= new AlertDialog.Builder(mCtx);
         alertDialog.setTitle("กรุณาระบุจำนวนที่ต้องการซื้อ");
 
-         input = new EditText(mCtx);
+        input = new EditText(mCtx);
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -164,7 +153,7 @@ int keepview;
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
 
-               // Toast.makeText(mCtx,String.valueOf(product.getPro_Id()) ,Toast.LENGTH_SHORT).show();
+                // Toast.makeText(mCtx,String.valueOf(product.getPro_Id()) ,Toast.LENGTH_SHORT).show();
 
                 //ไม่ให้สั่งซื้อเกิน Stcokได้
                 if(Double.parseDouble(input.getText().toString())>Double.parseDouble(product.getStock()) &&!input.getText().toString().isEmpty() ){
@@ -177,7 +166,7 @@ int keepview;
                     Toast.makeText(mCtx,"กรุณากรอกจำนวนที่ไม่น้อยกว่าหรือเป็น0ครับ",Toast.LENGTH_LONG).show();
                 }
 
-                    else {
+                else {
                     Buying((product.getPro_Id()));
                     Order();
 
@@ -200,10 +189,10 @@ int keepview;
             }
         });
 
-               alertDialog.show();
+        alertDialog.show();
     }
 
-        //ลดของใน Stock ลง
+    //ลดของใน Stock ลง
     public void Buying(int Id){
 
         Call<ResponseBody> buy=RetrofitClient
@@ -238,10 +227,17 @@ int keepview;
 
         final String username=Getgs.getString("Username", "").toString();
 
-            Getuser=username;
+        Getuser=username;
 
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+        String strDate = sdf.format(c.getTime());
+
+        datetime = strDate;
+
+
+        //System.out.println(datetime+"kuyyyyy");
 
         Call<ResponseBody> order=RetrofitClient
                 .getInstance()
@@ -282,7 +278,7 @@ int keepview;
 
         final String username=Getgs.getString("Username", "").toString();
 
-    order_id="";
+        order_id="";
 
         Getuser=username;
         Call<ResponseBody> getorderid=RetrofitClient
@@ -295,13 +291,13 @@ int keepview;
 
                 try {
 
-                        order_id = response.body().string();
-                        Toast.makeText(mCtx, order_id, Toast.LENGTH_LONG).show();
+                    order_id = response.body().string();
+                    Toast.makeText(mCtx, order_id, Toast.LENGTH_LONG).show();
 
-                        Orderdetail(order_id, product.getPro_Id(), input.getText().toString(), Double.parseDouble(product.getPrice_normal()), product.getPro_pic());
+                    Orderdetail(order_id, product.getPro_Id(), input.getText().toString(), Double.parseDouble(product.getPrice_normal()), product.getPro_pic());
 
-                        Intent intent = new Intent(mCtx, Mainmenuformember.class);
-                        mCtx.startActivity(intent);
+                    Intent intent = new Intent(mCtx, Mainmenuformember.class);
+                    mCtx.startActivity(intent);
 
 
                 } catch (IOException e) {
@@ -351,12 +347,12 @@ int keepview;
 
     class ProductViewholder extends RecyclerView.ViewHolder{
 
-            TextView textViewtitle,Detail,Price,Stock;
-            ImageView Image;
-            EditText Qauntity;
-            Button buying;
+        TextView textViewtitle,Detail,Price,Stock;
+        ImageView Image;
+        EditText Qauntity;
+        Button buying;
 
-            int keepId;
+        int keepId;
 
         public ProductViewholder(@NonNull View itemView) {
             super(itemView);
@@ -369,5 +365,4 @@ int keepview;
             buying=(Button)itemView.findViewById(R.id.Buying);
         }
     }
-
 }

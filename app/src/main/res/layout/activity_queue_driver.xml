@@ -11,10 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"
+
+        />
 
 
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -22,6 +29,7 @@
         android:id="@+id/namedriver"
         android:text="&#xA; &#xA; "
         />
+
 
 
 

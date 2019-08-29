@@ -212,4 +212,55 @@ public interface Api {
     );
 
 
+
+    //Sumbill เมื่อกดปุ่มยืนยันส่งให้หลังบ้าน
+
+    @FormUrlEncoded
+    @POST("Sumbill")
+    Call<ResponseBody> Sumbill(
+
+            @Field("Cusname") String Cusname,
+            @Field("date") String Date,
+            @Field("Qty") int Qty,
+            @Field("Sumtotal") Double Sumtotal
+
+    );
+
+
+
+    //Set status เป็น false เมื่อสั่งสินค้ายืนยันเสร็จแล้วครับบบบบ
+
+    @FormUrlEncoded
+    @POST("Setbillfalse")
+    Call<ResponseBody> Setbillfalse(
+
+            @Field("Cusname") String Cusname,
+
+            @Field("order_id") String Order_id
+
+
+    );
+
+
+//Fetch all user For the driver
+    @GET("Getalluser")
+    Call<ResponseBody> Getalluser();
+
+
+
+    //Set status เป็น finish เมื่อสั่งสินค้ายืนยันโดยการสแกนQR
+
+    @FormUrlEncoded
+    @POST("Setbillfinish")
+    Call<ResponseBody> Setbillfinish(
+
+
+            @Field("order_id") String Order_id
+
+
+    );
+
+
+
+
 }
